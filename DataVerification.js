@@ -38,17 +38,46 @@ const courseSchema = new mongoose.Schema({
     publishedDate: {
         type: Date,
         default: Date.now // use current time if the date is not set
+    },
+    bookCategory: {
+        type: String,
+        // enum: ['contentA', 'contentB', 'contentC', 'contentD']
+        enum: {
+            values: ['contentA', 'contentB', 'contentC', 'contentD'],
+            message: 'The type is not among the enum. '
+        }
+    },
+    customizedValidation: {
+        type: String,
+        validate: {
+            validator: v => {
+                return v && v.length > 10;
+            },
+            message: 'the input value is invalid.'
+        }
     }
 });
 
 const VerificationNeededElement = mongoose.model('VerificationNeededElement', courseSchema);
 
 VerificationNeededElement.create({
-    title: 'null',
+    title: null,
     // author: 'Aleqwerrttyuquirewyuiiuyewrquiskjd',
     author: 'Ezharjan',
     name: '   Ezharjan Alexander   ',
-    price: 22
+    price: 22,
+    // bookCategory: 'my-own-content' //invalid content
+    // bookCategory: 'contentA',
+    bookCategory: 'java',
+    // customizedValidation: 'abc12345678'
 }).then(result => {
     console.log('the result is : ' + result);
+}).catch(error => {
+    // console.log('error happened: ' + error);
+
+    const err = error.errors;
+    //Get all the error messages
+    for (let attr in err) {
+        console.log(err[attr]['message']);
+    }
 });
